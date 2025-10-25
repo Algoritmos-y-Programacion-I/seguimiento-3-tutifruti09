@@ -1,8 +1,8 @@
 package model;
+
 import java.time.LocalDate;
 
 import model.Computer;
-
 
 public class SchoolController {
 
@@ -11,14 +11,13 @@ public class SchoolController {
     private final int FLOORS = 10;
     private final int COL = 10;
     private final int HOURMAXSUPPORT = 100;
-    private Computer [][]computerMatrix;
-
+    private Computer[][] computerMatrix;
 
     /*
      * ATENCION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
      * Agregue los atributos (relaciones) necesarios para satisfacer los
      * requerimientos.
-     */  
+     */
 
     public SchoolController(String name) {
         this.name = name;
@@ -27,42 +26,41 @@ public class SchoolController {
 
     }
 
-    public String getName(){
+    public String getName() {
         return name;
     }
 
-    public int getHoursSpentSupport(){
+    public int getHoursSpentSupport() {
         return hourSpentSupport;
     }
 
-    public final int getFLOORS(){
+    public final int getFLOORS() {
         return FLOORS;
     }
 
-    public final int getCOL(){
+    public final int getCOL() {
         return COL;
     }
 
-    public final int getHOURMAXSUPPORT(){
+    public final int getHOURMAXSUPPORT() {
         return HOURMAXSUPPORT;
     }
 
-    public Computer[][] getComputerMatrix(){
+    public Computer[][] getComputerMatrix() {
         return computerMatrix;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setHoursSpentSupport(int hourSpentSupport){
+    public void setHoursSpentSupport(int hourSpentSupport) {
         this.hourSpentSupport = hourSpentSupport;
     }
 
-    public void setComputerMatrix(Computer[][] computerMatrix){
+    public void setComputerMatrix(Computer[][] computerMatrix) {
         this.computerMatrix = computerMatrix;
     }
-
 
     /*
      * ATENCION !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -75,46 +73,71 @@ public class SchoolController {
      * requerimientos.
      */
     public String agregarComputador(String serialNumber, int floor) {
-        if (floor < 0 || floor >= FLOORS){
+        if (floor < 0 || floor >= FLOORS) {
             return "Piso Invalido";
 
-        } 
-        for (int i =0; i < FLOORS; i++){
-            for (int j=0; j < COL; j++){
-                if (computerMatrix[i][j] != null && computerMatrix[i][j].getSerialNumber().equals(serialNumber)){
+        }
+        for (int i = 0; i < FLOORS; i++) {
+            for (int j = 0; j < COL; j++) {
+                if (computerMatrix[i][j] != null && computerMatrix[i][j].getSerialNumber().equals(serialNumber)) {
                     return "El computador ya existe";
 
                 }
 
-                }
-
-
             }
-
-            for (int j = 0; j<COL; j++){
-                if (computerMatrix[floor][j] ==null){
-                    computerMatrix[floor][j] = new Computer (serialNumber,true);
-                    return "Computador agregado exitosamente";
-
-                }
-            }
-            return "No hay espacio en el piso para agregar el computador";
 
         }
 
+        for (int j = 0; j < COL; j++) {
+            if (computerMatrix[floor][j] == null) {
+                computerMatrix[floor][j] = new Computer(serialNumber, true);
+                return "Computador agregado exitosamente";
 
-    
+            }
+        }
+        return "No hay espacio en el piso para agregar el computador";
 
-    public void agregarIncidenteEnComputador(String serialNumber, int floor, int col, String description, LocalDate dateReport) {
-        for (int i=0; i< FLOORS; i++){
+    }
+
+    public String agregarIncidenteEnComputador(String serialNumber, int floor, int col, String description,
+            LocalDate dateReport) {
+        for (int i = 0; i < FLOORS; i++) {
+            for (int j = 0; j < COL; j++) {
+                Computer comp = computerMatrix[i][j];
+                if (comp != null && comp.getSerialNumber().equals(serialNumber)) {
+                    comp.addIncident(dateReport, description);
+                    return "Incidente agregado exitosamente";
+
+                }
+            }
 
         }
+        return "Computador no encontrado";
 
     }
 
-    public void getComputerList() {
+    public String getComputerList() {
+        Computer maxCom = null;
+        int maxIncidents = 0;
+        int floor = -1;
+        int col = -1;
+        for (int i = 0; i < FLOORS; i++){
+            for (int j = 0; j < COL; j++) {
+            Computer comp = computerMatrix[i][j];
+            if (comp != null && comp.getIncidents().size() > maxIncidents) {
+                maxIncidents = comp.getIncidents().size();
+                maxCom = comp;
+                floor = i;
+                col = j;
+
+            }
+        }
+    } 
+        if (maxCom == null) {
+            return " No hay computadores con incidentes registrados";
+
+        }
+        return "Computador con mas incidentes ";
 
     }
-
 }
-
